@@ -1,0 +1,75 @@
+---
+const { children } = Astro.props;
+---
+<!DOCTYPE html>
+<html lang="en" class="">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Incredible Astro Starter</title>
+    <link rel="stylesheet" href="/styles/tailwind.css" />
+  </head>
+  <body class="bg-white text-black dark:bg-black dark:text-white font-sans transition-colors duration-300">
+    <header id="site-header" class="sticky top-0 w-full z-50 bg-white/80 dark:bg-black/80 backdrop-blur-md shadow transition-all duration-300">
+      <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+        <h1 class="text-lg font-bold">AstroStarter</h1>
+        <button id="theme-toggle" class="p-2 rounded text-sm border dark:border-white border-black">
+          Toggle Dark Mode
+        </button>
+      </div>
+    </header>
+
+    <main id="smooth-content" class="relative">
+      {children}
+    </main>
+
+    <script type="module">
+      import Lenis from 'https://cdn.skypack.dev/@studio-freight/lenis'
+      import gsap from 'https://cdn.skypack.dev/gsap'
+      import 'https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/ScrollTrigger.min.js'
+
+      const lenis = new Lenis({ duration: 1.2 })
+      function raf(time) {
+        lenis.raf(time)
+        requestAnimationFrame(raf)
+      }
+      requestAnimationFrame(raf)
+
+      gsap.utils.toArray('[data-fade]').forEach(el => {
+        gsap.fromTo(el, { opacity: 0, y: 50 }, {
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 80%',
+            toggleActions: 'play none none reverse',
+          },
+        })
+      })
+
+      // Auto dark mode detection
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches
+      if (prefersDark) {
+        document.documentElement.classList.add('dark')
+      }
+
+      // Toggle dark mode
+      document.getElementById('theme-toggle').addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark')
+      })
+
+      // Header animation on scroll
+      let lastScrollY = window.scrollY
+      const header = document.getElementById('site-header')
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > lastScrollY && window.scrollY > 50) {
+          header.classList.add('-translate-y-full')
+        } else {
+          header.classList.remove('-translate-y-full')
+        }
+        lastScrollY = window.scrollY
+      })
+    </script>
+  </body>
+</html>
